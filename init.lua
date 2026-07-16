@@ -974,3 +974,12 @@ end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost" }, {
+  pattern = "*",
+  callback = function()
+    if vim.bo.modified and vim.bo.buftype == "" and vim.fn.expand("%") ~= "" then
+      vim.cmd("silent! write")
+    end
+  end,
+})
