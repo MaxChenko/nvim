@@ -986,3 +986,10 @@ vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost" }, {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*",
+  callback = function()
+    vim.lsp.format({async = false})
+  end,
+})
