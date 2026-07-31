@@ -176,7 +176,7 @@ do
   vim.o.confirm = true
 
   -- claude recommended addition to fix treesitter health issue
-  vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/site")
+  vim.opt.runtimepath:append(vim.fn.stdpath 'data' .. '/site')
 end
 
 -- ============================================================
@@ -966,30 +966,27 @@ end
 -- kickstart.plugins.* examples
 -- ============================================================
 do
-    require 'kickstart.plugins.debug'
-    require 'kickstart.plugins.indent_line'
-    require 'kickstart.plugins.lint'
-    require 'kickstart.plugins.autopairs'
-    -- require 'kickstart.plugins.neo-tree'
-    require 'kickstart.plugins.gitsigns'
-    require 'custom.plugins'
+  require 'kickstart.plugins.debug'
+  require 'kickstart.plugins.indent_line'
+  require 'kickstart.plugins.lint'
+  require 'kickstart.plugins.autopairs'
+  -- require 'kickstart.plugins.neo-tree'
+  require 'kickstart.plugins.gitsigns'
+  require 'custom.plugins'
 end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
-vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost" }, {
-  pattern = "*",
+vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost' }, {
+  pattern = '*',
   callback = function()
-    if vim.bo.modified and vim.bo.buftype == "" and vim.fn.expand("%") ~= "" then
-      vim.cmd("silent! write")
-    end
+    if vim.bo.modified and vim.bo.buftype == '' and vim.fn.expand '%' ~= '' then vim.cmd 'silent! write' end
   end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*",
-  callback = function()
-    vim.lsp.format({async = false})
-  end,
+-- Auto formatter
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*',
+  callback = function() vim.lsp.buf.format { async = false } end,
 })
