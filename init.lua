@@ -994,3 +994,19 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 -- Special keymaps
 vim.keymap.set('n', '<leader>ff', '<cmd>Telescope find_files<cr>', { desc = 'Find files' })
 vim.keymap.set('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', { desc = 'Grep in project' })
+
+vim.opt.makeprg = 'npx tsc --noEmit -p tsconfig.json'
+vim.opt.errorformat = '%f(%l\\.%c): %trror TS%n: %m'
+
+vim.keymap.set('n', '<leader>m', function()
+  vim.cmd 'silent make'
+  vim.cmd 'cwindow'
+end, { desc = 'Run make, open quickfix' })
+
+-- open/close the list independently
+vim.keymap.set('n', '<leader>q', vim.cmd.copen, { desc = 'Open quickfix' })
+vim.keymap.set('n', '<leader>Q', vim.cmd.cclose, { desc = 'Close quickfix' })
+
+-- move through entries
+vim.keymap.set('n', ']q', vim.cmd.cnext, { desc = 'Next quickfix item' })
+vim.keymap.set('n', '[q', vim.cmd.cprev, { desc = 'Prev quickfix item' })
