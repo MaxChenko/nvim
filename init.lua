@@ -496,12 +496,27 @@ vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost' }, {
 })
 
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = '*',
-  callback = function() vim.lsp.buf.format { async = false } end,
-})
+  pattern = '*.go',
+  callback = function()
+    -- 1. Organize imports synchronously
+    local params = vim.lsp.util.make_range_params()
+    params.context = { only = { 'source.organizeImports' } }
 
-vim.opt.makeprg = 'npx tsc --noEmit -p tsconfig.json'
-vim.opt.errorformat = '%f(%l\\.%c): %trror TS%n: %m'
+    local result = vim.lsp.buf_request_sync(0, 'textDocument/codeAction', params, 1000)
+    for cid, res in pairs(result or {}) do
+      for _, r in pairs(res.result or {}) do
+        if r.edit then
+          vim.lsp.util.apply_workspace_edit(r.edit, 'utf-8')
+        else
+          vim.lsp.buf.execute_command(r.command)
+        end
+      end
+    end
+
+    -- 2. Format the file synchronously
+    vim.lsp.buf.format { async = false }
+  end,
+})
 
 vim.keymap.set('n', '<leader>m', function()
   vim.cmd 'silent make'
@@ -513,3 +528,28 @@ vim.keymap.set('n', '<leader>Q', vim.cmd.cclose, { desc = 'Close quickfix' })
 
 vim.keymap.set('n', ']q', vim.cmd.cnext, { desc = 'Next quickfix item' })
 vim.keymap.set('n', '[q', vim.cmd.cprev, { desc = 'Prev quickfix item' })
+
+local save_all = function()
+  pcall(function() vim.cmd 'wa' end)
+end
+
+vim.keymap.set('n', '<C-s>', save_all, { silent = true, desc = 'Save all files' })
+vim.keymap.set('i', '<C-s>', function()
+  vim.cmd 'normal! \27'
+  save_all()
+  vim.cmd 'normal! gi'
+end, { silent = true, desc = 'Save all files' })
+vim.keymap.set('v', '<C-s>', function()
+  vim.cmd 'normal! \27'
+  save_all()
+  vim.cmd 'normal! gv'
+end, { silent = true, desc = 'Save all files' })
+
+-- Quit all windows/files with Ctrl + Q
+vim.keymap.set('n', '<C-q>', '<cmd>q<CR>', { silent = true, desc = 'Quit Neovim' })
+vim.keymap.set('i', '<C-q>', '<Esc><cmd>q<CR>', { silent = true, desc = 'Quit Neovim' })
+vim.keymap.set('v', '<C-q>', '<Esc><cmd>q<CR>', { silent = true, desc = 'Quit Neovim' })
+
+vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { silent = true, desc = 'Open netrw' })
+
+vim.keymap.set('n', 'gV', '<cmd>vsp | lua vim.lsp.buf.definition()<CR>', { desc = 'Goto Definition (Vertical Split)' })
