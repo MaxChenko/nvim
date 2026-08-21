@@ -7,6 +7,7 @@ do
   vim.g.have_nerd_font = true
 
   vim.o.relativenumber = true
+  vim.o.number=true
 
   vim.o.mouse = 'a'
 
@@ -553,3 +554,5 @@ vim.keymap.set('v', '<C-q>', '<Esc><cmd>q<CR>', { silent = true, desc = 'Quit Ne
 vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { silent = true, desc = 'Open netrw' })
 
 vim.keymap.set('n', 'gV', '<cmd>vsp | lua vim.lsp.buf.definition()<CR>', { desc = 'Goto Definition (Vertical Split)' })
+
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'Rename symbol' })
